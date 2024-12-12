@@ -48,7 +48,15 @@ public class Scrabble {
 
 	// Checks if the given word is in the dictionary.
 	public static boolean isWordInDictionary(String word) {
-		//// Replace the following statement with your code
+
+		for(int i = 0; i<NUM_OF_WORDS; i++)
+		{
+			String dictionaryWord = DICTIONARY[i];
+			if(dictionaryWord.equals(word))
+			{
+				return true;
+			}
+		}
 		return false;
 	}
 	
@@ -56,16 +64,32 @@ public class Scrabble {
 	// If the length of the word equals the length of the hand, adds 50 points to the score.
 	// If the word includes the sequence "runi", adds 1000 points to the game.
 	public static int wordScore(String word) {
-		//// Replace the following statement with your code
-		return 0;
+		int score = 0;
+		int wordLength = word.length();
+		for(int i = 0; i < wordLength; i++){
+			score+= SCRABBLE_LETTER_VALUES[(int)(word.charAt(i)) - (int)('a')];
+		}
+		score = score*wordLength;
+
+		if(HAND_SIZE == wordLength){
+			score += 50;
+		}
+		if(MyString.subsetOf("runi", word)){
+			score += 1000;
+		}
+
+		return score;
 	}
 
 	// Creates a random hand of length (HAND_SIZE - 2) and then inserts
 	// into it, at random indexes, the letters 'a' and 'e'
 	// (these two vowels make it easier for the user to construct words)
 	public static String createHand() {
-		//// Replace the following statement with your code
-		return null;
+
+		String newHand = MyString.randomStringOfLetters(HAND_SIZE - 2);
+		newHand = MyString.insertRandomly('a', newHand);
+		newHand = MyString.insertRandomly('e', newHand);
+		return newHand;
 	}
 	
     // Runs a single hand in a Scrabble game. Each time the user enters a valid word:
@@ -85,9 +109,26 @@ public class Scrabble {
 			// non-whitespace characters. Whitespace is either space characters, or  
 			// end-of-line characters.
 			String input = in.readString();
-			//// Replace the following break statement with code
-			//// that completes the hand playing loop
-			break;
+
+			if(input.equals(".")){
+				break;
+			}
+
+			if(!MyString.subsetOf(input, hand)) {
+
+				System.out.println("Invalid word. Try again.");
+
+			} else if (!isWordInDictionary(input)){
+
+				System.out.println("No such word in the dictionary. Try again.");
+
+			} else{
+				hand = MyString.remove(hand, input);
+				int inputScore = wordScore(input);
+				score += inputScore;
+				System.out.println(input + " earned " + inputScore + " points. Score: " + score + " points");
+
+			}
 		}
 		if (hand.length() == 0) {
 	        System.out.println("Ran out of letters. Total score: " + score + " points");
@@ -110,19 +151,28 @@ public class Scrabble {
 			// Gets the user's input, which is all the characters entered by 
 			// the user until the user enter the ENTER character.
 			String input = in.readString();
-			//// Replace the following break statement with code
-			//// that completes the game playing loop
-			break;
+
+			if(input.equals("e")){
+
+				break;
+			
+			} else if(input.equals("n")){
+			
+				playHand(createHand());
+			
+			} else {
+				System.out.println("Invalid input, please try again.");
+			}
 		}
 	}
 
 	public static void main(String[] args) {
 		//// Uncomment the test you want to run
 		////testBuildingTheDictionary();  
-		////testScrabbleScore();    
+		///testScrabbleScore();    
 		////testCreateHands();  
-		////testPlayHands();
-		////playGame();
+		///testPlayHands();
+		playGame();
 	}
 
 	public static void testBuildingTheDictionary() {
